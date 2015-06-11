@@ -157,7 +157,7 @@ Where `<adapter>` is the name of your adapter without the `hubot-` prefix.
 
 ## Deployment
 
-    % heroku create --stack cedar
+    % heroku git:remote -a eshbot # first time only
     % git push heroku master
 
 If your Heroku account has been verified you can run the following to enable
