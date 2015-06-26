@@ -17,7 +17,7 @@ module.exports = (robot) ->
 
   robot.catchAll (msg) ->
     # IRT-31 find Internal Reporting Tool activity
-    if msg.message.user.room == 'aha_' && /feature\sIRT-\d*/.test(msg.message.text)
+    if msg.message.user.room == 'aha_' && /feature\sIRT-\d.*flag/i.test(msg.message.text)
       attachment = msg.message.rawMessage.attachments[0]
       # if card was Shipped
       if /Shipped$/.test(attachment.fields[0].value)
