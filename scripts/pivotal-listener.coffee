@@ -17,10 +17,10 @@ module.exports = (robot) ->
 
   robot.router.post "/hubot/pivotal-listener", (req, res) ->
     try
-      reqBody = JSON.parse req.body
+      reqBody = req.body
     catch error
       robot.logger.error "Error parsing json: #{error}"
-      reqBody = nil
+      reqBody = null
       return
     if reqBody
       res.send 'OK'
@@ -37,4 +37,5 @@ module.exports = (robot) ->
         storyPrefix: projectStoryPrefixMap[projectName]
 
       if activityType == 'story_create_activity' && project.projectId
+        robot.logger.info "Emitting create story for project: #{projectName}"
         robot.emit 'story_create_activity', project
