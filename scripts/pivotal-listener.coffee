@@ -30,7 +30,14 @@ module.exports = (robot) ->
         "District Portal": "DTP-",
         "CCK12": "CCK12-",
         "IRT": "IRT-",
-        "Salesforce": "SF-"
+        "Salesforce": "SF-",
+        "Data Integration": "DI-",
+        "CCK12 Design": "CCK12Design-",
+        "Data Warehouse": "DW-"
+        "Ecto/Material Girl": "ECTO-",
+        "Fiber Toolkit": "FTK-",
+        "SOTS Progress Tracking": "SOTS-",
+        "TechDebt": "TD-",
 
       project =
         projectId: reqBody["project"]["id"]
