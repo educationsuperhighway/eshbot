@@ -24,7 +24,7 @@ module.exports = (robot) ->
 
     robot.logger.info "Requesting all pivotal stories..."
     robot
-      .http("#{PIVOTAL_ENDPOINT}#{PROJECT_ID}/stories?limit=2000")
+      .http("#{PIVOTAL_ENDPOINT}#{PROJECT_ID}/stories?limit=20000")
       .header('X-TrackerToken', TOKEN)
       .get() (err, res, body) ->
         if err
