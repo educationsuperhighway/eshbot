@@ -13,63 +13,97 @@
 # URLS:
 #   None
 
+request = require 'request-promise'
+PIVOTAL_ENDPOINT = "https://www.pivotaltracker.com/services/v5/projects/"
+TOKEN = process.env.PIVOTAL_TRACKER_API_TOKEN
+resultsPerPage = 500
+
+getPage = (page, projectId) =>
+  request(
+    url: "#{PIVOTAL_ENDPOINT}#{projectId}/stories?limit=#{resultsPerPage}&offset=#{resultsPerPage * page}",
+    headers: 'X-TrackerToken': TOKEN)
+
+sortStories = (stories) =>
+  stories.sort (a, b) ->
+    return 0 if a['id'] == b['id']
+    if a['id'] < b['id']
+      return -1
+    else
+      return 1
+
+wait = (delay) =>
+  return new Promise((resolve, reject) =>
+    console.log('Waiting...', delay)
+    setTimeout(resolve, delay)
+  )
+
+parseJson = (responses) =>
+  stories = []
+  for response in responses
+    stories.push(JSON.parse(response)...)
+  return stories
+
+generateNewStoryNames = (project, stories) =>
+  STORY_PREFIX = project.projectPrefix
+  sendToPivotal = []
+  taggedStoryCount = 0
+  maxStoryId = 0
+  for story in stories
+    storyId = story["id"]
+    storyName = story["name"]
+    pattern = "^#{STORY_PREFIX}(\\d+)"
+    regex = new RegExp(pattern)
+    currentStoryId = null
+    friendlyStoryId = storyName.match(regex)
+    if friendlyStoryId
+      currentStoryId = parseInt(friendlyStoryId[1])
+    if currentStoryId
+      maxStoryId = currentStoryId if currentStoryId > maxStoryId
+      console.log "Skipping story with existing ID: #{storyName}"
+      continue
+
+    taggedStoryCount += 1
+    maxStoryId += 1
+    newStoryName = "#{STORY_PREFIX}#{maxStoryId} - #{storyName}"
+    data = { id: storyId, name: newStoryName }
+    sendToPivotal.push(data)
+  return sendToPivotal
+
 module.exports = (robot) ->
   robot.on 'story_create_activity', (project) ->
     PROJECT_ID = project.projectId
-    STORY_PREFIX = project.storyPrefix
-    TOKEN = process.env.PIVOTAL_TRACKER_API_TOKEN
-    PIVOTAL_ENDPOINT = "https://www.pivotaltracker.com/services/v5/projects/"
-    maxStoryId = 0
-    taggedStoryCount = 0
+    requests = [0..2].map (n) -> getPage(n, PROJECT_ID)
+    robot.logger.info "Requesting pivotal stories..."
+    Promise.all(requests)
+    .then(parseJson)
+    .then(sortStories)
+    .then (stories) =>
+      sendToPivotal = generateNewStoryNames(project, stories)
+      batchSize = 5
 
-    robot.logger.info "Requesting all pivotal stories..."
-    robot
-      .http("#{PIVOTAL_ENDPOINT}#{PROJECT_ID}/stories?limit=20000")
-      .header('X-TrackerToken', TOKEN)
-      .get() (err, res, body) ->
-        if err
-          robot.logger.error "Error making request to pivotal for project: #{PROJECT_ID}"
-          robot.logger.error "Error: #{err}"
-          return
-        if body?
-          stories = JSON.parse(body)
-          stories.sort (a, b) ->
-            return 0 if a['id'] == b['id']
-            if a['id'] < b['id']
-              return -1
-            else
-              return 1
+      sendNextBatch = () =>
+        console.log("Sending next batch:", sendToPivotal.length)
+        if sendToPivotal.length == 0
+          return Promise.resolve()
+        batch = sendToPivotal.splice(0, batchSize)
+        return Promise.all(batch.map(updateStory))
+          .then(() =>
+            return wait(1000)
+          ).then(sendNextBatch)
 
-          for story in stories
-            robot.logger.info "#{story.name}"
-            storyId = story["id"]
-            storyName = story["name"]
-            pattern = "^#{STORY_PREFIX}(\\d+)"
-            regex = new RegExp(pattern)
-            currentStoryId = null
-            friendlyStoryId = storyName.match(regex)
-            if friendlyStoryId
-              currentStoryId = parseInt(friendlyStoryId[1])
-            if currentStoryId
-              maxStoryId = currentStoryId if currentStoryId > maxStoryId
-              robot.logger.info "Skipping story with existing ID: #{storyName}"
-              continue
+      updateStory = (story) =>
+        endpoint = "#{PIVOTAL_ENDPOINT}#{PROJECT_ID}/stories/#{story.id}"
+        console.log("Sending story: ", story)
+        delete story.id
+        return request(
+          method: 'PUT',
+          url: endpoint,
+          body: JSON.stringify(story),
+          headers:
+            'X-TrackerToken': TOKEN,
+            'Content-Type': 'application/json')
 
-            taggedStoryCount += 1
-            maxStoryId += 1
-
-            newStoryName = "#{STORY_PREFIX}#{maxStoryId} - #{storyName}"
-            endpoint = "#{PIVOTAL_ENDPOINT}#{PROJECT_ID}/stories/#{storyId}"
-            data = JSON.stringify({name: newStoryName})
-
-            robot.http(endpoint)
-                 .header('X-TrackerToken', TOKEN)
-                 .header('Content-Type', 'application/json')
-                 .put(data) (err, res, body) ->
-                   if err
-                     robot.logger.error "Error updating name: #{err}"
-                     return
-                   if res.statusCode >= 200 && res.statusCode < 300
-                     robot.logger.info "Adding new ID to story: #{newStoryName}"
-
-          robot.logger.info "Tagged #{taggedStoryCount} new stories out of #{stories.length} total."
+      return sendNextBatch()
+        .catch (err) =>
+          console.error(err)
+          process.exit()
