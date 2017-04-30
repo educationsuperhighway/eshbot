@@ -26,7 +26,7 @@ module.exports = (robot) ->
       res.send 'OK'
       activityType = reqBody["kind"]
       projectName = reqBody["project"]["name"]
-      projectStoryPrefixMap =
+      projectPrefixMap =
         "District Portal": "DTP-",
         "CCK12": "CCK12-",
         "IRT": "IRT-",
@@ -41,8 +41,7 @@ module.exports = (robot) ->
 
       project =
         projectId: reqBody["project"]["id"]
-        storyPrefix: projectStoryPrefixMap[projectName]
-
+        projectPrefix: projectPrefixMap[projectName]
       if activityType == 'story_create_activity' && project.projectId
         robot.logger.info "Emitting create story for project: #{projectName}"
         robot.emit 'story_create_activity', project
