@@ -38,6 +38,9 @@ module.exports = (robot) ->
         "Fiber Toolkit": "FTK-",
         "SOTS Progress Tracking": "SOTS-",
         "TechDebt": "TD-",
+        "SAT": "SAT-",
+        "Salesforce": "SF-",
+        "CCK12 Design": "CCK12D-"
 
       project =
         projectId: reqBody["project"]["id"]
