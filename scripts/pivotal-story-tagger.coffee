@@ -72,7 +72,7 @@ generateNewStoryNames = (project, stories) =>
 module.exports = (robot) ->
   robot.on 'story_create_activity', (project) ->
     PROJECT_ID = project.projectId
-    requests = [0..2].map (n) -> getPage(n, PROJECT_ID)
+    requests = [0..6].map (n) -> getPage(n, PROJECT_ID)
     robot.logger.info "Requesting pivotal stories..."
     Promise.all(requests)
     .then(parseJson)
