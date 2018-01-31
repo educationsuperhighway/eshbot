@@ -41,7 +41,8 @@ module.exports = (robot) ->
         "SAT": "SAT-",
         "Salesforce": "SF-",
         "CCK12 Design": "CCK12D-",
-        "Data Architecture Revamp": "DAR-"
+        "Data Architecture Revamp": "DAR-",
+        "Salesforce": "SFDC-"
 
       project =
         projectId: reqBody["project"]["id"]
