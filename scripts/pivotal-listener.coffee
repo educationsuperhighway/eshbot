@@ -30,7 +30,6 @@ module.exports = (robot) ->
         "District Portal": "DTP-",
         "CCK12": "CCK12-",
         "IRT": "IRT-",
-        "Salesforce": "SF-",
         "Data Integration": "DI-",
         "CCK12 Design": "CCK12Design-",
         "Data Warehouse": "DW-"
@@ -39,9 +38,9 @@ module.exports = (robot) ->
         "SOTS Progress Tracking": "SOTS-",
         "TechDebt": "TD-",
         "SAT": "SAT-",
-        "Salesforce": "SF-",
         "CCK12 Design": "CCK12D-",
         "Data Architecture Revamp": "DAR-",
+        "DAR - ENG": "DARENG-",
         "Salesforce": "SFDC-"
 
       project =
