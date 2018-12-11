@@ -41,7 +41,8 @@ module.exports = (robot) ->
         "CCK12 Design": "CCK12D-",
         "Data Architecture Revamp": "DAR-",
         "DAR - ENG": "DARENG-",
-        "Salesforce": "SFDC-"
+        "Salesforce": "SFDC-",
+        "JAM": "JAM-"
 
       project =
         projectId: reqBody["project"]["id"]
