@@ -11,8 +11,8 @@
 #   None
 #
 
-NOTIFICATION_CHANNEL = 'rundeck-notifications'
-EMAIL_SUBJECT = 'SUCCESS - [Integration and Production] Deploy'
+NOTIFICATION_CHANNEL = process.env.NOTIFICATION_CHANNEL || 'rundeck-notifications'
+EMAIL_SUBJECT = process.env.EMAIL_SUBJECT || 'SUCCESS - [Integration and Production] Deploy'
 
 parseLog = (data) =>
   lines = data.split('\r\n')
