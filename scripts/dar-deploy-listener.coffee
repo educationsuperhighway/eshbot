@@ -12,7 +12,7 @@
 #
 
 NOTIFICATION_CHANNEL = process.env.DAR_DEPLOY_CHANNEL || 'rundeck-notifications'
-EMAIL_SUBJECT = process.env.DAR_DEPLOY_EMAIL_SUBJECT || 'SUCCESS - [Integration and Production] Deploy'
+EMAIL_SUBJECT = process.env.DAR_DEPLOY_EMAIL_SUBJECT || 'SUCCESS - [Production] Deploy'
 
 parseLog = (data) =>
   lines = data.split('\r\n')
@@ -39,11 +39,13 @@ handleLog = (logUrl, robot) =>
     res.setEncoding('utf8')
     res.on('data', (d) ->
       status = parseLog d
-      msgData = {
-        channel: '#' + NOTIFICATION_CHANNEL
-        text: 'Failed to refresh: ' + status.failed.join(',')
-      }
-      robot.adapter.customMessage msgData
+      failed = status.failed.join(',')
+      if failed.length > 1
+        msgData = {
+          channel: '#' + NOTIFICATION_CHANNEL
+          text: 'Failed to refresh: ' + failed
+        }
+        robot.adapter.customMessage msgData
     )
   req.on('error', (e) ->
     console.error(e)
