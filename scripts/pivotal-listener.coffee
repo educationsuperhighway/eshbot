@@ -42,7 +42,8 @@ module.exports = (robot) ->
         "Data Architecture Revamp": "DAR-",
         "DAR - ENG": "DARENG-",
         "Salesforce": "SFDC-",
-        "JAM": "JAM-"
+        "JAM": "JAM-",
+        "Business As Usual": "BAU-"
 
       project =
         projectId: reqBody["project"]["id"]
