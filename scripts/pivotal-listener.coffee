@@ -43,7 +43,8 @@ module.exports = (robot) ->
         "DAR - ENG": "DARENG-",
         "Salesforce": "SFDC-",
         "JAM": "JAM-",
-        "Business As Usual": "BAU-"
+        "Business As Usual": "BAU-",
+        "State Of The States 2019": "SOTS-"
 
       project =
         projectId: reqBody["project"]["id"]
