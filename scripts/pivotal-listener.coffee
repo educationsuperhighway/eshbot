@@ -44,7 +44,7 @@ module.exports = (robot) ->
         "Salesforce": "SFDC-",
         "JAM": "JAM-",
         "Business As Usual": "BAU-",
-        "State Of The States 2019": "SOTS19-"
+        "State of the States 2019": "SOTS19-"
 
       project =
         projectId: reqBody["project"]["id"]
