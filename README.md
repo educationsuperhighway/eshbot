@@ -212,3 +212,7 @@ Add the subdomain hubot should connect to. If you web URL looks like
 
 You may want to get comfortable with `heroku logs` and `heroku restart` if
 you're having issues.
+
+### Updating the Pivotal card labeling tool
+
+After adding the board name and your preferred prefix to the pivotal-listener.coffee script, be sure that your Pivotal board has a webhook installed to trigger the script. In the Tracker settings panel for the board, add this webhook: https://eshbot.herokuapp.com/hubot/pivotal-listener/
